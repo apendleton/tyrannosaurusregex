@@ -1,4 +1,4 @@
-import re
+import re, copy
 
 FLAGS = {
     'ignorecase': re.I,
@@ -34,6 +34,11 @@ class TyrannosaurusRegex(object):
 
     def __contains__(self, item):
         return self._re.search(item) is not None
+
+    def __invert__(self):
+        searcher = copy.copy(self)
+        object.__setattr__(searcher, "__class__", SearchingTyrannosaurusRegex)
+        return searcher
 
     # override get/set attr for flags
 
@@ -77,6 +82,10 @@ class TyrannosaurusRegex(object):
     def matches(self, s):
         m = self._re.match(s)
         return m is not None
+
+class SearchingTyrannosaurusRegex(TyrannosaurusRegex):
+    def __eq__(self, other):
+        return self.__contains__(other)
 
 
 class Matchtodon(list):
